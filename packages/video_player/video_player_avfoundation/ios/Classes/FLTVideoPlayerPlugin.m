@@ -118,7 +118,7 @@ NS_INLINE int64_t FLTCMTimeToMillis(CMTime time) {
   return time.value * 1000 / time.timescale;
 }
 
-NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
+NS_INLINE CGFloat ToDegrees(CGFloat radians) {
   // Input range [-pi, pi] or [-180, 180]
   CGFloat degrees = GLKMathRadiansToDegrees((float)radians);
   if (degrees < 0) {
@@ -193,19 +193,20 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   // At least 2 user videos show a black screen when in portrait mode if we directly use the
   // videoTrack.preferredTransform Setting tx to the height of the video instead of 0, properly
   // displays the video https://github.com/flutter/flutter/issues/17606#issuecomment-413473181
-  if (transform.tx == 0 && transform.ty == 0) {
     NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
-    NSLog(@"TX and TY are 0. Rotation: %ld. Natural width,height: %f, %f", (long)rotationDegrees,
-          videoTrack.naturalSize.width, videoTrack.naturalSize.height);
-    if (rotationDegrees == 90) {
-      NSLog(@"Setting transform tx");
-      transform.tx = videoTrack.naturalSize.height;
-      transform.ty = 0;
-    } else if (rotationDegrees == 270) {
-      NSLog(@"Setting transform ty");
-      transform.tx = 0;
-      transform.ty = videoTrack.naturalSize.width;
-    }
+  NSLog(@"VIDEO__ %f, %f, %f, %f, %li", transform.tx, transform.ty, videoTrack.naturalSize.height,
+This conversation was marked as resolved by Salakar
+ Show conversation
+        videoTrack.naturalSize.width, (long)rotationDegrees);
+  if (rotationDegrees == 90) {
+    transform.tx = videoTrack.naturalSize.height;
+    transform.ty = 0;
+  } else if (rotationDegrees == 180) {
+    transform.tx = videoTrack.naturalSize.width;
+    transform.ty = videoTrack.naturalSize.height;
+  } else if (rotationDegrees == 270) {
+    transform.tx = 0;
+    transform.ty = videoTrack.naturalSize.width;
   }
   return transform;
 }
